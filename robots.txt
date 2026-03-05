@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sumaiya.apu.bd/sitemap.xml
