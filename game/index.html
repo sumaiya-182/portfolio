@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Snack Games - Android Web</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    :root {
+      --bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 45%, #ffffff 100%);
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #7c3aed;
+      --primary2: #ec4899;
+      --accent: #fb7185;
+      --green: #10b981;
+      --red: #ef4444;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      --radius: 24px;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      min-height: calc(100vh - 28px);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border-radius: 24px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .small {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .pill {
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 18px;
+      white-space: nowrap;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #7c3aed, #ec4899, #fb7185);
+      color: white;
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      font-size: 14px;
+      line-height: 1.5;
+      max-width: 260px;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      margin-bottom: 10px;
+      background: rgba(255,255,255,0.16);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .emoji-float {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      font-size: 52px;
+      animation: wobble 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes wobble {
+      from { transform: rotate(-8deg) scale(0.96); }
+      to { transform: rotate(8deg) scale(1.04); }
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .game-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .game-card {
+      background: linear-gradient(90deg, #f5d0fe, #ffe4e6, #ffedd5);
+      border-radius: 28px;
+      padding: 1px;
+      box-shadow: var(--shadow);
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .game-card:nth-child(2) {
+      background: linear-gradient(90deg, #fde68a, #fef3c7, #fed7aa);
+    }
+
+    .game-card:nth-child(3) {
+      background: linear-gradient(90deg, #bfdbfe, #dbeafe, #cffafe);
+    }
+
+    .game-card-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 27px;
+      padding: 16px;
+    }
+
+    .game-icon {
+      width: 66px;
+      height: 66px;
+      border-radius: 20px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      box-shadow: 0 8px 18px rgba(15,23,42,0.08);
+      flex-shrink: 0;
+    }
+
+    .game-info h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .game-info p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn .22s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: 28px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .panel-sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 6px 0 0;
+    }
+
+    .best-box {
+      background: #f8fafc;
+      border-radius: 18px;
+      padding: 12px 14px;
+      text-align: center;
+      min-width: 82px;
+    }
+
+    .best-box small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .best-box strong {
+      font-size: 26px;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 18px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: white;
+    }
+
+    .btn-light {
+      background: #f1f5f9;
+      color: #334155;
+    }
+
+    .play-area {
+      position: relative;
+      height: 420px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fff1f2, #fef3c7);
+    }
+
+    .overlay-msg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      z-index: 5;
+      background: rgba(255,255,255,0.35);
+      backdrop-filter: blur(2px);
+    }
+
+    .overlay-msg .big {
+      font-size: 60px;
+      margin-bottom: 8px;
+    }
+
+    .overlay-msg h3 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .overlay-msg p {
+      margin: 10px 0 0;
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.5;
+      max-width: 260px;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 12px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #ec4899, #8b5cf6);
+      transition: width .2s linear;
+    }
+
+    .snack-target {
+      position: absolute;
+      width: 82px;
+      height: 82px;
+      border: none;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 12px 20px rgba(15,23,42,0.15);
+      font-size: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      z-index: 4;
+    }
+
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .memory-card {
+      aspect-ratio: 1 / 1;
+      border-radius: 22px;
+      border: none;
+      font-size: 38px;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+      box-shadow: 0 10px 18px rgba(15,23,42,0.1);
+    }
+
+    .memory-card.open,
+    .memory-card.matched {
+      background: white;
+      color: var(--text);
+    }
+
+    .win-box {
+      margin-top: 14px;
+      border-radius: 24px;
+      padding: 16px;
+      text-align: center;
+      background: #ecfdf5;
+    }
+
+    .win-box .icon {
+      font-size: 40px;
+      margin-bottom: 6px;
+    }
+
+    .catch-area {
+      position: relative;
+      height: 420px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #dbeafe, #eff6ff 45%, #ede9fe);
+    }
+
+    .falling-item,
+    .basket {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 52px;
+      z-index: 3;
+    }
+
+    .basket {
+      bottom: 8px;
+      transform: translateX(-50%);
+    }
+
+    .move-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .move-btn {
+      height: 58px;
+      border-radius: 20px;
+      border: none;
+      font-size: 18px;
+      font-weight: 800;
+      background: #f1f5f9;
+      color: #334155;
+      box-shadow: var(--shadow);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 380px) {
+      .hero h1 { font-size: 30px; }
+      .panel-title { font-size: 24px; }
+      .game-info h2 { font-size: 18px; }
+      .stats { gap: 8px; }
+      .stat-value { font-size: 18px; }
+      .play-area, .catch-area { height: 380px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div>
+        <div class="small">Mobile Arcade</div>
+        <div class="brand">Snack Games</div>
+      </div>
+      <div class="pill">Android Web</div>
+    </div>
+
+    <section id="homeScreen" class="screen active">
+      <div class="hero">
+        <div class="hero-badge">Fast thumb-friendly mini games</div>
+        <h1>Snack Games</h1>
+        <p>Play quick snack-themed games in your phone browser. No app install needed.</p>
+        <div class="emoji-float">🎮</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Tap Best</div>
+          <div class="stat-value" id="homeTapBest">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Memory Best</div>
+          <div class="stat-value" id="homeMemoryBest">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Catch Best</div>
+          <div class="stat-value" id="homeCatchBest">0</div>
+        </div>
+      </div>
+
+      <div class="game-list">
+        <button class="game-card" onclick="showScreen('tapScreen')">
+          <div class="game-card-inner">
+            <div class="game-icon">🍩</div>
+            <div class="game-info">
+              <h2>Tap Snack</h2>
+              <p>Tap the snack as fast as you can before time runs out.</p>
+            </div>
+          </div>
+        </button>
+
+        <button class="game-card" onclick="showScreen('memoryScreen')">
+          <div class="game-card-inner">
+            <div class="game-icon">🍪</div>
+            <div class="game-info">
+              <h2>Memory Bites</h2>
+              <p>Match snack pairs and finish in the fewest moves.</p>
+            </div>
+          </div>
+        </button>
+
+        <button class="game-card" onclick="showScreen('catchScreen')">
+          <div class="game-card-inner">
+            <div class="game-icon">🍟</div>
+            <div class="game-info">
+              <h2>Snack Catch</h2>
+              <p>Move left and right to catch falling snacks.</p>
+            </div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <section id="tapScreen" class="screen">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <button class="btn btn-light" onclick="backHome()">← Back</button>
+            <h2 class="panel-title">Tap Snack</h2>
+            <p class="panel-sub">Tap fast and beat the 20-second timer.</p>
+          </div>
+          <div class="best-box">
+            <small>Best</small>
+            <strong id="tapBest">0</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="tapScore">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Time</div>
+          <div class="stat-value" id="tapTime">20s</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Mode</div>
+          <div class="stat-value" id="tapMode">Ready</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="controls-row">
+          <div class="progress-track"><div id="tapProgress" class="progress-fill"></div></div>
+          <button class="btn btn-primary" onclick="startTapGame()" id="tapStartBtn">Start</button>
+        </div>
+
+        <div class="play-area" id="tapArea">
+          <div class="overlay-msg" id="tapOverlay">
+            <div class="big">🍭</div>
+            <h3>Ready?</h3>
+            <p>Press start, then tap the moving snack as many times as possible.</p>
+          </div>
+          <button id="tapTarget" class="snack-target hidden">🍩</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="memoryScreen" class="screen">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <button class="btn btn-light" onclick="backHome()">← Back</button>
+            <h2 class="panel-title">Memory Bites</h2>
+            <p class="panel-sub">Match all snack pairs using the fewest moves.</p>
+          </div>
+          <div class="best-box">
+            <small>Best</small>
+            <strong id="memoryBest">—</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Moves</div>
+          <div class="stat-value" id="memoryMoves">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Matched</div>
+          <div class="stat-value" id="memoryMatched">0/12</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Status</div>
+          <div class="stat-value" id="memoryStatus">Play</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="controls-row">
+          <p class="hint">Tap cards to reveal matching snacks.</p>
+          <button class="btn btn-light" onclick="initMemoryGame()">Reset</button>
+        </div>
+
+        <div id="memoryGrid" class="memory-grid"></div>
+
+        <div id="memoryWin" class="win-box hidden">
+          <div class="icon">🏆</div>
+          <strong>You matched them all!</strong>
+          <div id="memoryWinText" style="margin-top: 6px; color: var(--muted); font-size: 14px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="catchScreen" class="screen">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <button class="btn btn-light" onclick="backHome()">← Back</button>
+            <h2 class="panel-title">Snack Catch</h2>
+            <p class="panel-sub">Catch snacks and protect your 3 lives.</p>
+          </div>
+          <div class="best-box">
+            <small>Best</small>
+            <strong id="catchBest">0</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Score</div>
+          <div class="stat-value" id="catchScore">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Lives</div>
+          <div class="stat-value" id="catchLives">❤❤❤</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Mode</div>
+          <div class="stat-value" id="catchMode">Ready</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="controls-row">
+          <p class="hint">Use the buttons below to move the basket.</p>
+          <button class="btn btn-primary" onclick="startCatchGame()" id="catchStartBtn">Start</button>
+        </div>
+
+        <div class="catch-area" id="catchArea">
+          <div class="overlay-msg" id="catchOverlay">
+            <div class="big">🧺</div>
+            <h3>Catch the snacks</h3>
+            <p>Healthy snacks give bonus points. Missing items costs lives.</p>
+          </div>
+          <div class="falling-item hidden" id="fallingItem">🍔</div>
+          <div class="basket" id="basket">🧺</div>
+        </div>
+
+        <div class="move-controls">
+          <button class="move-btn" onclick="moveBasket(-10)">⬅ Left</button>
+          <button class="move-btn" onclick="moveBasket(10)">Right ➡</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const snacks = ['🍕', '🍔', '🍟', '🍩', '🍪', '🧃', '🍫', '🍿'];
+    const healthySnacks = ['🍎', '🍌', '🥕', '🍓'];
+
+    const scores = JSON.parse(localStorage.getItem('snackGameScores') || '{"tap":0,"memory":0,"catch":0}');
+
+    function saveScores() {
+      localStorage.setItem('snackGameScores', JSON.stringify(scores));
+      renderHomeScores();
+      document.getElementById('tapBest').textContent = scores.tap;
+      document.getElementById('memoryBest').textContent = scores.memory === 0 ? '—' : scores.memory;
+      document.getElementById('catchBest').textContent = scores.catch;
+    }
+
+    function renderHomeScores() {
+      document.getElementById('homeTapBest').textContent = scores.tap;
+      document.getElementById('homeMemoryBest').textContent = scores.memory === 0 ? '—' : scores.memory;
+      document.getElementById('homeCatchBest').textContent = scores.catch;
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      saveScores();
+    }
+
+    function backHome() {
+      showScreen('homeScreen');
+    }
+
+    function randomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    /* TAP GAME */
+    let tapScore = 0;
+    let tapTime = 20;
+    let tapTimer = null;
+    let tapPlaying = false;
+
+    const tapArea = document.getElementById('tapArea');
+    const tapTarget = document.getElementById('tapTarget');
+    const tapOverlay = document.getElementById('tapOverlay');
+
+    function moveTapTarget() {
+      const x = 12 + Math.random() * 70;
+      const y = 14 + Math.random() * 64;
+      tapTarget.style.left = x + '%';
+      tapTarget.style.top = y + '%';
+      tapTarget.textContent = randomItem(snacks);
+    }
+
+    function updateTapUI() {
+      document.getElementById('tapScore').textContent = tapScore;
+      document.getElementById('tapTime').textContent = tapTime + 's';
+      document.getElementById('tapMode').textContent = tapPlaying ? 'Live' : 'Ready';
+      document.getElementById('tapProgress').style.width = ((tapTime / 20) * 100) + '%';
+      document.getElementById('tapStartBtn').textContent = tapPlaying ? 'Restart' : 'Start';
+    }
+
+    function endTapGame() {
+      tapPlaying = false;
+      clearInterval(tapTimer);
+      tapTarget.classList.add('hidden');
+      tapOverlay.classList.remove('hidden');
+      tapOverlay.innerHTML = '<div class="big">🏁</div><h3>Time up!</h3><p>Your score: <strong>' + tapScore + '</strong>. Tap start to play again.</p>';
+      if (tapScore > scores.tap) {
+        scores.tap = tapScore;
+        saveScores();
+      }
+      updateTapUI();
+    }
+
+    function startTapGame() {
+      clearInterval(tapTimer);
+      tapScore = 0;
+      tapTime = 20;
+      tapPlaying = true;
+      tapOverlay.classList.add('hidden');
+      tapTarget.classList.remove('hidden');
+      moveTapTarget();
+      updateTapUI();
+
+      tapTimer = setInterval(() => {
+        tapTime--;
+        updateTapUI();
+        if (tapTime <= 0) {
+          endTapGame();
+        }
+      }, 1000);
+    }
+
+    tapTarget.addEventListener('click', () => {
+      if (!tapPlaying) return;
+      tapScore++;
+      if (tapScore > scores.tap) {
+        scores.tap = tapScore;
+        saveScores();
+      }
+      moveTapTarget();
+      updateTapUI();
+    });
+
+    /* MEMORY GAME */
+    let memoryCards = [];
+    let flipped = [];
+    let lockBoard = false;
+    let moves = 0;
+    let matched = 0;
+
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function initMemoryGame() {
+      const chosen = shuffle(snacks).slice(0, 6);
+      memoryCards = shuffle(chosen.flatMap((icon, i) => ([
+        { id: i + '-a', icon, matched: false },
+        { id: i + '-b', icon, matched: false }
+      ])));
+
+      flipped = [];
+      lockBoard = false;
+      moves = 0;
+      matched = 0;
+      document.getElementById('memoryWin').classList.add('hidden');
+      document.getElementById('memoryStatus').textContent = 'Play';
+      renderMemory();
+      updateMemoryUI();
+    }
+
+    function updateMemoryUI() {
+      document.getElementById('memoryMoves').textContent = moves;
+      document.getElementById('memoryMatched').textContent = matched + '/12';
+      document.getElementById('memoryBest').textContent = scores.memory === 0 ? '—' : scores.memory;
+    }
+
+    function renderMemory() {
+      const grid = document.getElementById('memoryGrid');
+      grid.innerHTML = '';
+
+      memoryCards.forEach(card => {
+        const btn = document.createElement('button');
+        btn.className = 'memory-card';
+        const isOpen = flipped.includes(card.id) || card.matched;
+        if (isOpen) btn.classList.add('open');
+        if (card.matched) btn.classList.add('matched');
+        btn.textContent = isOpen ? card.icon : '?';
+        btn.onclick = () => flipCard(card.id);
+        grid.appendChild(btn);
+      });
+    }
+
+    function flipCard(id) {
+      if (lockBoard) return;
+      const card = memoryCards.find(c => c.id === id);
+      if (!card || card.matched || flipped.includes(id)) return;
+
+      flipped.push(id);
+      renderMemory();
+
+      if (flipped.length === 2) {
+        moves++;
+        updateMemoryUI();
+        lockBoard = true;
+
+        const [firstId, secondId] = flipped;
+        const first = memoryCards.find(c => c.id === firstId);
+        const second = memoryCards.find(c => c.id === secondId);
+
+        if (first.icon === second.icon) {
+          setTimeout(() => {
+            memoryCards = memoryCards.map(c =>
+              c.id === firstId || c.id === secondId ? { ...c, matched: true } : c
+            );
+            matched += 2;
+            flipped = [];
+            lockBoard = false;
+            renderMemory();
+            updateMemoryUI();
+            checkMemoryWin();
+          }, 350);
+        } else {
+          setTimeout(() => {
+            flipped = [];
+            lockBoard = false;
+            renderMemory();
+          }, 700);
+        }
+      }
+    }
+
+    function checkMemoryWin() {
+      if (matched === 12) {
+        document.getElementById('memoryStatus').textContent = 'Won';
+        document.getElementById('memoryWin').classList.remove('hidden');
+        document.getElementById('memoryWinText').textContent = 'Finished in ' + moves + ' moves.';
+        if (scores.memory === 0 || moves < scores.memory) {
+          scores.memory = moves;
+          saveScores();
+          updateMemoryUI();
+        }
+      }
+    }
+
+    /* CATCH GAME */
+    let catchScore = 0;
+    let catchLives = 3;
+    let catchPlaying = false;
+    let basketX = 50;
+    let catchLoop = null;
+    let falling = { x: 50, y: 0, icon: '🍔', healthy: false };
+
+    const fallingItem = document.getElementById('fallingItem');
+    const basket = document.getElementById('basket');
+    const catchOverlay = document.getElementById('catchOverlay');
+
+    function resetFallingItem() {
+      const healthy = Math.random() < 0.22;
+      falling = {
+        x: 10 + Math.random() * 80,
+        y: 0,
+        icon: healthy ? randomItem(healthySnacks) : randomItem(snacks),
+        healthy
+      };
+      renderCatchObjects();
+    }
+
+    function renderCatchObjects() {
+      fallingItem.style.left = falling.x + '%';
+      fallingItem.style.top = falling.y + '%';
+      fallingItem.textContent = falling.icon;
+      basket.style.left = basketX + '%';
+    }
+
+    function updateCatchUI() {
+      document.getElementById('catchScore').textContent = catchScore;
+      document.getElementById('catchLives').textContent = catchLives > 0 ? '❤'.repeat(catchLives) : '0';
+      document.getElementById('catchMode').textContent = catchPlaying ? 'Live' : 'Ready';
+      document.getElementById('catchStartBtn').textContent = catchPlaying ? 'Restart' : 'Start';
+      document.getElementById('catchBest').textContent = scores.catch;
+    }
+
+    function endCatchGame() {
+      catchPlaying = false;
+      clearInterval(catchLoop);
+      fallingItem.classList.add('hidden');
+      catchOverlay.classList.remove('hidden');
+      catchOverlay.innerHTML = '<div class="big">🎯</div><h3>Game over</h3><p>Your score: <strong>' + catchScore + '</strong>. Press start to try again.</p>';
+      if (catchScore > scores.catch) {
+        scores.catch = catchScore;
+        saveScores();
+      }
+      updateCatchUI();
+    }
+
+    function startCatchGame() {
+      clearInterval(catchLoop);
+      catchScore = 0;
+      catchLives = 3;
+      basketX = 50;
+      catchPlaying = true;
+      catchOverlay.classList.add('hidden');
+      fallingItem.classList.remove('hidden');
+      resetFallingItem();
+      updateCatchUI();
+
+      catchLoop = setInterval(() => {
+        if (!catchPlaying) return;
+        falling.y += 3.6;
+
+        const caught = falling.y >= 82 && Math.abs(falling.x - basketX) < 14;
+        const missed = falling.y >= 95;
+
+        if (caught) {
+          catchScore += falling.healthy ? 2 : 1;
+          if (catchScore > scores.catch) {
+            scores.catch = catchScore;
+            saveScores();
+          }
+          resetFallingItem();
+        } else if (missed) {
+          catchLives--;
+          if (catchLives <= 0) {
+            updateCatchUI();
+            endCatchGame();
+            return;
+          }
+          resetFallingItem();
+        }
+
+        renderCatchObjects();
+        updateCatchUI();
+      }, 120);
+    }
+
+    function moveBasket(delta) {
+      basketX += delta;
+      if (basketX < 12) basketX = 12;
+      if (basketX > 88) basketX = 88;
+      renderCatchObjects();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('catchScreen').classList.contains('active')) {
+        if (e.key === 'ArrowLeft') moveBasket(-10);
+        if (e.key === 'ArrowRight') moveBasket(10);
+      }
+    });
+
+    let touchStartX = null;
+    document.getElementById('catchArea').addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    document.getElementById('catchArea').addEventListener('touchmove', (e) => {
+      if (touchStartX === null) return;
+      const currentX = e.touches[0].clientX;
+      const diff = currentX - touchStartX;
+      if (Math.abs(diff) > 14) {
+        moveBasket(diff > 0 ? 6 : -6);
+        touchStartX = currentX;
+      }
+    }, { passive: true });
+
+    renderHomeScores();
+    saveScores();
+    updateTapUI();
+    initMemoryGame();
+    updateCatchUI();
+    renderCatchObjects();
+  </script>
+</body>
+</html>
